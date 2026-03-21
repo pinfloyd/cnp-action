@@ -7,7 +7,7 @@ jobs:
   direct-deny-proof:
     runs-on: ubuntu-latest
     steps:
-      - name: Fetch pubkey
+      - name: Probe pubkey endpoint
         shell: bash
         run: |
           set -euo pipefail
@@ -15,22 +15,16 @@ jobs:
           test "$STATUS" = "200"
           test -s pubkey.txt
 
-      - name: Build deny payload
+      - name: Build canonical deny payload
         shell: bash
         run: |
           set -euo pipefail
-          cat > intent.json <<'JSON'
-          {
-            "added_lines": "sk-test-123",
-            "added_lines_sha256": "test-sha256",
-            "policy_id": "ai-secrets-v1",
-            "ref": "refs/heads/main",
-            "repo": "pinfloyd/cnp-action",
-            "schema": "intent-v1"
-          }
-          JSON
+          printf 'sk-test-123\n' > added_lines.txt
+          SHA=$(sha256sum added_lines.txt | awk '{print $1}')
+          printf '{"schema":"intent-v1","repo":"pinfloyd/cnp-action","ref":"refs/heads/main","policy_id":"ai-secrets-v1","added_lines":"sk-test-123","added_lines_sha256":"%s"}' "$SHA" > intent.json
+          test -s intent.json
 
-      - name: Post deny-case to admit
+      - name: Post canonical deny payload to admit
         shell: bash
         run: |
           set -euo pipefail
@@ -39,8 +33,8 @@ jobs:
           test "$STATUS" = "200"
           test -s admit_response.json
 
-      - name: Assert deny-like response
+      - name: Assert DENY decision
         shell: bash
         run: |
           set -euo pipefail
-          grep -E '"decision"[[:space:]]*:[[:space:]]*"DENY"|"decision"[[:space:]]*:[[:space:]]*"BLOCK"|'"'"'DENY'"'"'|"verdict"[[:space:]]*:[[:space:]]*"DENY"' admit_response.json
+          python -c "import json; obj=json.load(open('admit_response.json','r',encoding='utf-8')); d=obj.get('decision') or obj.get('verdict') or ((obj.get('record') or {}).get('decision') if isinstance(obj.get('record'),dict) else None); print(d); raise SystemExit(0 if d=='DENY' else 1)"
