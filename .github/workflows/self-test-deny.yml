@@ -19,7 +19,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python -c "import hashlib,json; added='sk-test-123\n'; obj={'schema':'intent-v1','repo':'pinfloyd/cnp-action','ref':'refs/heads/main','policy_id':'ai-secrets-v1','added_lines':added,'added_lines_sha256':hashlib.sha256(added.encode('utf-8')).hexdigest()}; open('intent.json','w',encoding='utf-8').write(json.dumps(obj,separators=(',',':')))"
+          python -c "import hashlib,json; lines=['sk-test-123']; joined='\\n'.join(lines)+'\\n'; obj={'schema':'intent-v1','repo':'pinfloyd/cnp-action','ref':'refs/heads/main','policy_id':'ai-secrets-v1','added_lines':lines,'added_lines_sha256':hashlib.sha256(joined.encode('utf-8')).hexdigest()}; open('intent.json','w',encoding='utf-8').write(json.dumps(obj,separators=(',',':')))"
           test -s intent.json
 
       - name: Post canonical deny payload to admit
