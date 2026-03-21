@@ -4,22 +4,60 @@ on:
   workflow_dispatch:
 
 jobs:
-  placeholder-fail-closed:
+  boundary-reachability:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Probe base URL
+        shell: bash
+        run: |
+          set -euo pipefail
+          STATUS=$(curl -sS -o base_body.txt -w "%{http_code}" "http://107.172.34.21:8787")
+          test "$STATUS" = "404"
+
+      - name: Probe pubkey endpoint
+        shell: bash
+        run: |
+          set -euo pipefail
+          STATUS=$(curl -sS -o pubkey.txt -w "%{http_code}" "http://107.172.34.21:8787/pubkey")
+          test "$STATUS" = "200"
+          test -s pubkey.txt
+
+      - name: Probe admit endpoint method behavior
+        shell: bash
+        run: |
+          set -euo pipefail
+          STATUS=$(curl -sS -o admit_body.txt -w "%{http_code}" "http://107.172.34.21:8787/admit")
+          test "$STATUS" = "405"
+
+  live-boundary-fail-closed:
+    needs: boundary-reachability
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Run placeholder action
+      - name: Fetch live boundary pubkey
+        id: fetch_pubkey
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -sS "http://107.172.34.21:8787/pubkey" -o pubkey.txt
+          test -s pubkey.txt
+          PUBKEY=$(tr -d '\r\n' < pubkey.txt)
+          test -n "$PUBKEY"
+          echo "pubkey=$PUBKEY" >> "$GITHUB_OUTPUT"
+
+      - name: Run action against live boundary path
         id: action_step
         uses: ./
         continue-on-error: true
         with:
-          authority-url: http://107.172.34.21:8787
-          authority-pubkey: example-pubkey-placeholder
-          policy-id: example-policy
+          authority-url: http://107.172.34.21:8787/admit
+          authority-pubkey: ${{ steps.fetch_pubkey.outputs.pubkey }}
+          policy-id: cnp-self-test-v1
 
-      - name: Assert placeholder failed
+      - name: Assert live-boundary fail-closed
         shell: bash
         run: |
+          set -euo pipefail
           test "${{ steps.action_step.outcome }}" = "failure"
