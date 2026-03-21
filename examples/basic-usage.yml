@@ -1,0 +1,22 @@
+name: basic-usage
+
+on:
+  workflow_dispatch:
+
+jobs:
+  preflight-example:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Example contract-anchor invocation
+        uses: ./
+        with:
+          authority-url: "http://107.172.34.21:8787"
+          authority-pubkey: "EXAMPLE_PUBKEY_NOT_LIVE"
+          policy-id: "example-policy"
+
+      - name: Example note
+        if: ${{ always() }}
+        run: |
+          echo "This example anchors the current Action contract surface."
+          echo "It does not claim a live production authority integration."
+          echo "It does not claim a public production install path."

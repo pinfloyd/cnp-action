@@ -1,0 +1,25 @@
+name: self-test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  placeholder-fail-closed:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run placeholder action
+        id: action_step
+        uses: ./
+        continue-on-error: true
+        with:
+          authority-url: http://107.172.34.21:8787
+          authority-pubkey: example-pubkey-placeholder
+          policy-id: example-policy
+
+      - name: Assert placeholder failed
+        shell: bash
+        run: |
+          test "${{ steps.action_step.outcome }}" = "failure"

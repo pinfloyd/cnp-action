@@ -1,0 +1,63 @@
+name: cnp-action
+description: Private GitHub Action surface for external controlled negotiation protocol (cnp) control.
+author: Pin Floyd
+
+branding:
+  icon: shield
+  color: purple
+
+inputs:
+  authority-url:
+    description: External authority endpoint URL.
+    required: false
+  authority-pubkey:
+    description: Pinned authority public key.
+    required: false
+  policy-id:
+    description: Policy identifier.
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - name: Preflight gate
+      shell: pwsh
+      run: |
+        $ErrorActionPreference = "Stop"
+
+        $authorityUrl = '${{ inputs.authority-url }}'
+        $authorityPubkey = '${{ inputs.authority-pubkey }}'
+        $policyId = '${{ inputs.policy-id }}'
+
+        if ([string]::IsNullOrWhiteSpace($authorityUrl)) {
+          Write-Error "FAIL_CLOSED: authority-url is missing"
+          exit 1
+        }
+
+        if ([string]::IsNullOrWhiteSpace($authorityPubkey)) {
+          Write-Error "FAIL_CLOSED: authority-pubkey is missing"
+          exit 1
+        }
+
+        if ([string]::IsNullOrWhiteSpace($policyId)) {
+          Write-Error "FAIL_CLOSED: policy-id is missing"
+          exit 1
+        }
+
+        if ($authorityUrl -eq 'http://107.172.34.21:8787') {
+          Write-Error "FAIL_CLOSED: placeholder authority-url is not allowed"
+          exit 1
+        }
+
+        if ($authorityPubkey -eq 'example-pubkey-placeholder') {
+          Write-Error "FAIL_CLOSED: placeholder authority-pubkey is not allowed"
+          exit 1
+        }
+
+        if ($policyId -eq 'example-policy') {
+          Write-Error "FAIL_CLOSED: placeholder policy-id is not allowed"
+          exit 1
+        }
+
+        Write-Error "FAIL_CLOSED: runtime authority integration is not wired yet"
+        exit 1
