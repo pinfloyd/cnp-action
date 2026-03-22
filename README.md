@@ -27,15 +27,13 @@ This surface exists to show the product-facing path:
 install, understand the outcome, and understand the commercial path above the public Action surface.
 
 ## Commercial step
-For real commercial use above the public GitHub surfaces, the next step is Hosted Authority.
 
-Hosted Authority is the commercial handoff above the public Action surface.
-No claim is made here that Hosted Authority is already a public live self-serve service.
+For real commercial use above the public GitHub surfaces, use the Hosted Authority inquiry path:
+
+https://access-cnp-run.cnpworkersdev.workers.dev
 
 ## Current route
+
 1. Understand the outcome here.
 2. Evaluate the proof / meaning surface separately if needed.
-3. Move to Hosted Authority for the commercial path.
-
-## Contact
-Commercial contact: schastliviy13@gmail.com
+3. Move to the Hosted Authority inquiry path for the commercial path.

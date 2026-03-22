@@ -86,3 +86,9 @@ The commercial transition happens when a user moves from:
 
 - evaluating the current Action surface to
 - requesting Hosted Authority or separate written commercial use through this inquiry surface.
+
+## Commercial step
+
+For real commercial use above the public GitHub surfaces, use the Hosted Authority inquiry path:
+
+https://access-cnp-run.cnpworkersdev.workers.dev
