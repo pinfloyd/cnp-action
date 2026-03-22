@@ -39,4 +39,3 @@ No claim is made here that Hosted Authority is already a public live self-serve 
 
 ## Contact
 Commercial contact: schastliviy13@gmail.com
-Authority base URL: http://107.172.34.21:8787
