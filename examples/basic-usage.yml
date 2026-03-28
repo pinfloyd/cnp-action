@@ -10,7 +10,7 @@ jobs:
       - name: Example contract-anchor invocation
         uses: ./
         with:
-          authority-url: "http://107.172.34.21:8787"
+          authority-url: "https://admit.ai-admissibility.com"
           authority-pubkey: "EXAMPLE_PUBKEY_NOT_LIVE"
           policy-id: "example-policy"
 

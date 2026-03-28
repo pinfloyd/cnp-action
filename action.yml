@@ -44,7 +44,7 @@ runs:
           exit 1
         }
 
-        if ($authorityUrl -eq 'http://107.172.34.21:8787') {
+        if ($authorityUrl -eq 'https://admit.ai-admissibility.com') {
           Write-Error "FAIL_CLOSED: placeholder authority-url is not allowed"
           exit 1
         }

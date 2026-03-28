@@ -11,7 +11,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          STATUS=$(curl -sS -o pubkey.txt -w "%{http_code}" "http://107.172.34.21:8787/pubkey")
+          STATUS=$(curl -sS -o pubkey.txt -w "%{http_code}" "https://admit.ai-admissibility.com/pubkey")
           test "$STATUS" = "200"
           test -s pubkey.txt
 
@@ -26,7 +26,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          STATUS=$(curl -sS -o admit_response.json -w "%{http_code}" -X POST "http://107.172.34.21:8787/admit" -H "Content-Type: application/json" --data-binary @intent.json)
+          STATUS=$(curl -sS -o admit_response.json -w "%{http_code}" -X POST "https://admit.ai-admissibility.com/admit" -H "Content-Type: application/json" --data-binary @intent.json)
           echo "HTTP_STATUS=$STATUS"
           test "$STATUS" = "200"
           test -s admit_response.json
