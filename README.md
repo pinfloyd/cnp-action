@@ -37,3 +37,10 @@ https://access-cnp-run.cnpworkersdev.workers.dev
 1. Understand the outcome here.
 2. Evaluate the proof / meaning surface separately if needed.
 3. Move to the Hosted Authority inquiry path for the commercial path.
+
+## Request access
+
+[Request access](https://admit.ai-admissibility.com)
+
+This is the single canonical inquiry entry.
+GitHub is not checkout.
