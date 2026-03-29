@@ -30,8 +30,6 @@ install, understand the outcome, and understand the commercial path above the pu
 
 For real commercial use above the public GitHub surfaces, use the Hosted Authority inquiry path:
 
-https://access-cnp-run.cnpworkersdev.workers.dev
-
 ## Current route
 
 1. Understand the outcome here.
@@ -40,7 +38,7 @@ https://access-cnp-run.cnpworkersdev.workers.dev
 
 ## Request access
 
-[Request access](https://admit.ai-admissibility.com)
+[Request access](https://access-cnp-run.cnpworkersdev.workers.dev)
 
 This is the single canonical inquiry entry.
 GitHub is not checkout.
