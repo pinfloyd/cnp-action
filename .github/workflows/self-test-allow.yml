@@ -26,7 +26,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          STATUS=$(curl -sS -o admit_response.json -w "%{http_code}" -X POST "https://admit.ai-admissibility.com/admit" -H "Content-Type: application/json" --data-binary @intent.json)
+          STATUS=$(curl -sS -o admit_response.json -w "%{http_code}" -X POST "https://admit.ai-admissibility.com/admit" -H "Content-Type: application/json" --data-binary @intent.json -H "X-Access-Tier: EVALUATION")
           echo "HTTP_STATUS=$STATUS"
           test "$STATUS" = "200"
           test -s admit_response.json
@@ -36,3 +36,4 @@ jobs:
         run: |
           set -euo pipefail
           python -c "import json; obj=json.load(open('admit_response.json','r',encoding='utf-8')); d=obj.get('decision') or obj.get('verdict') or ((obj.get('record') or {}).get('decision') if isinstance(obj.get('record'),dict) else None); print(d); raise SystemExit(0 if d=='ALLOW' else 1)"
+
