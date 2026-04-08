@@ -26,8 +26,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          STATUS=$(curl -sS -o admit_body.txt -w "%{http_code}" "https://admit.ai-admissibility.com/admit")
-          test "$STATUS" = "405"
+          STATUS=$(curl -sS -o admit_body.txt -w "%{http_code}" -X POST "https://admit.ai-admissibility.com/admit" -H "Content-Type: application/json" -H "X-Access-Tier: EVALUATION" --data-binary '{')
+          test "$STATUS" = "400"
+          test -s admit_body.txt
 
   live-boundary-fail-closed:
     needs: boundary-reachability
@@ -61,4 +62,5 @@ jobs:
         run: |
           set -euo pipefail
           test "${{ steps.action_step.outcome }}" = "failure"
+
 
