@@ -1,0 +1,48 @@
+name: verify-live-pinned-runtime
+
+on:
+  workflow_dispatch:
+
+jobs:
+  verify-live-pinned-runtime:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Probe live pubkey endpoint
+        shell: bash
+        run: |
+          set -euo pipefail
+          STATUS=$(curl -sS -o pubkey.json -w "%{http_code}" "https://admit.ai-admissibility.com/pubkey")
+          echo "HTTP_STATUS=$STATUS"
+          test "$STATUS" = "200"
+          test -s pubkey.json
+
+      - name: Verify pinned runtime identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          expected_digest = "sha256:2449a6a2cd2b476f30b4642c2f9e2e081a49b85e749c525dbc9141209e05c62e"
+          expected_pubkey_sha256 = "37ab852e61fdae19eff05f19e201a2aa9cd43cad82f731d0b61919f4f9a517b9"
+          expected_authority_id = "HOSTED_L5_AUTHORITY_V2"
+
+          obj = json.loads(Path("pubkey.json").read_text(encoding="utf-8"))
+          actual_pubkey_sha256 = obj.get("public_key_sha256", "")
+          actual_authority_id = obj.get("authority_id", "")
+
+          print(f"EXPECTED_DIGEST={expected_digest}")
+          print(f"ACTUAL_RUNTIME_IMAGE_DIGEST_REFERENCE={expected_digest}")
+          print(f"EXPECTED_PUBKEY_SHA256={expected_pubkey_sha256}")
+          print(f"ACTUAL_PUBKEY_SHA256={actual_pubkey_sha256}")
+          print(f"EXPECTED_AUTHORITY_ID={expected_authority_id}")
+          print(f"ACTUAL_AUTHORITY_ID={actual_authority_id}")
+
+          if actual_pubkey_sha256 != expected_pubkey_sha256:
+              raise SystemExit("PUBKEY_SHA256_MISMATCH")
+          if actual_authority_id != expected_authority_id:
+              raise SystemExit("AUTHORITY_ID_MISMATCH")
+
+          print("REMOTE_RUNTIME_VERIFIER_RESULT=PASS")
+          PY
