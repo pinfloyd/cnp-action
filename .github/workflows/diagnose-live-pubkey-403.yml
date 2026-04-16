@@ -1,0 +1,50 @@
+name: diagnose-live-pubkey-403
+
+on:
+  workflow_dispatch:
+
+jobs:
+  diagnose-live-pubkey-403:
+    runs-on: ubuntu-latest
+    steps:
+      - name: External pubkey diagnostic
+        shell: bash
+        run: |
+          set -euo pipefail
+          URL="https://admit.ai-admissibility.com/pubkey"
+
+          echo "=== RUNNER ==="
+          uname -a || true
+          echo "USER_AGENT=curl-default"
+
+          echo "=== CURL_WITH_HEADERS ==="
+          STATUS=$(curl -sS -D response_headers.txt -o response_body.txt -w "%{http_code}" "$URL" || true)
+          echo "HTTP_STATUS=$STATUS"
+
+          echo "=== RESPONSE_HEADERS_BEGIN ==="
+          cat response_headers.txt || true
+          echo "=== RESPONSE_HEADERS_END ==="
+
+          echo "=== RESPONSE_BODY_BEGIN ==="
+          sed -n '1,120p' response_body.txt || true
+          echo
+          echo "=== RESPONSE_BODY_END ==="
+
+          echo "=== PARSED_HEADERS ==="
+          grep -iE '^(server:|cf-ray:|content-type:|location:|x-|cf-cache-status:)' response_headers.txt || true
+
+          echo "=== SAME_REQUEST_WITH_BROWSER_UA ==="
+          STATUS_BROWSER=$(curl -sS -A "Mozilla/5.0" -D response_headers_browser.txt -o response_body_browser.txt -w "%{http_code}" "$URL" || true)
+          echo "HTTP_STATUS_BROWSER=$STATUS_BROWSER"
+
+          echo "=== RESPONSE_HEADERS_BROWSER_BEGIN ==="
+          cat response_headers_browser.txt || true
+          echo "=== RESPONSE_HEADERS_BROWSER_END ==="
+
+          echo "=== RESPONSE_BODY_BROWSER_BEGIN ==="
+          sed -n '1,120p' response_body_browser.txt || true
+          echo
+          echo "=== RESPONSE_BODY_BROWSER_END ==="
+
+          echo "=== DNS ==="
+          getent hosts admit.ai-admissibility.com || true
