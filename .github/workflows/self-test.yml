@@ -109,6 +109,7 @@ jobs:
           authority-url: https://admit.ai-admissibility.com/admit
           authority-pubkey: ${{ steps.fetch_pubkey.outputs.pubkey }}
           policy-id: cnp-self-test-v1
+          trust-verdict: PASS
 
       - name: Assert live-boundary fail-closed
         shell: bash

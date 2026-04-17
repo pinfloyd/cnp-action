@@ -16,6 +16,9 @@ inputs:
   policy-id:
     description: Policy identifier.
     required: false
+  trust-verdict:
+    description: Runtime trust verdict. Must be PASS.
+    required: false
 
 runs:
   using: composite
@@ -28,6 +31,7 @@ runs:
         $authorityUrl = '${{ inputs.authority-url }}'
         $authorityPubkey = '${{ inputs.authority-pubkey }}'
         $policyId = '${{ inputs.policy-id }}'
+        $trustVerdict = '${{ inputs.trust-verdict }}'
 
         if ([string]::IsNullOrWhiteSpace($authorityUrl)) {
           Write-Error "FAIL_CLOSED: authority-url is missing"
@@ -44,6 +48,11 @@ runs:
           exit 1
         }
 
+        if ([string]::IsNullOrWhiteSpace($trustVerdict)) {
+          Write-Error "FAIL_CLOSED: trust-verdict is missing"
+          exit 1
+        }
+
         if ($authorityUrl -eq 'https://admit.ai-admissibility.com') {
           Write-Error "FAIL_CLOSED: placeholder authority-url is not allowed"
           exit 1
@@ -56,6 +65,11 @@ runs:
 
         if ($policyId -eq 'example-policy') {
           Write-Error "FAIL_CLOSED: placeholder policy-id is not allowed"
+          exit 1
+        }
+
+        if ($trustVerdict -ne 'PASS') {
+          Write-Error "FAIL_CLOSED: trust-verdict must be PASS"
           exit 1
         }
 
