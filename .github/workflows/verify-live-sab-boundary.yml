@@ -1,0 +1,126 @@
+name: verify-live-sab-boundary
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 3 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  verify-live-sab-boundary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Probe pubkey and pinned authority identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          STATUS=$(curl -sS -o pubkey.json -w "%{http_code}" "https://admit.ai-admissibility.com/pubkey")
+          echo "PUBKEY_STATUS=$STATUS"
+          test "$STATUS" = "200"
+          test -s pubkey.json
+          python3 - <<'PY'
+          import json
+          obj=json.load(open("pubkey.json","r",encoding="utf-8"))
+          expected_authority="HOSTED_L5_AUTHORITY_V2"
+          expected_pubkey_sha256="37ab852e61fdae19eff05f19e201a2aa9cd43cad82f731d0b61919f4f9a517b9"
+          actual_authority=obj.get("authority_id","")
+          actual_pubkey_sha256=obj.get("public_key_sha256","")
+          print("ACTUAL_AUTHORITY_ID="+actual_authority)
+          print("ACTUAL_PUBKEY_SHA256="+actual_pubkey_sha256)
+          if actual_authority != expected_authority: raise SystemExit("AUTHORITY_ID_MISMATCH")
+          if actual_pubkey_sha256 != expected_pubkey_sha256: raise SystemExit("PUBKEY_SHA256_MISMATCH")
+          print("PUBKEY_IDENTITY_CHECK=PASS")
+          PY
+
+      - name: Prove raw legacy bypass shape is blocked
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf '{"legacy":"raw_bypass_probe","payload":"OPENAI_API_KEY=probe"}' > bad_shape.json
+          STATUS=$(curl -sS -o bad_shape_response.json -w "%{http_code}" -X POST "https://admit.ai-admissibility.com/admit" -H "Content-Type: application/json" --data-binary @bad_shape.json)
+          echo "BAD_SHAPE_STATUS=$STATUS"
+          cat bad_shape_response.json
+          test "$STATUS" = "400"
+          python3 - <<'PY'
+          import json
+          obj=json.load(open("bad_shape_response.json","r",encoding="utf-8"))
+          err=obj.get("error","")
+          print("BAD_SHAPE_ERROR="+err)
+          if err != "unsupported_admit_shape": raise SystemExit("BAD_SHAPE_NOT_BLOCKED_AS_EXPECTED")
+          print("BAD_SHAPE_BLOCK_CHECK=PASS")
+          PY
+
+      - name: Build canonical harmless ALLOW payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib,json
+          lines=["SAFE_CONFIG=1","NO_SECRET_PRESENT=1"]
+          joined="\n".join(lines)+"\n"
+          obj={"schema":"intent-v1","repo":"pinfloyd/cnp-action","ref":"refs/heads/main","policy_id":"ai-secrets-v1","added_lines":lines,"added_lines_sha256":hashlib.sha256(joined.encode("utf-8")).hexdigest()}
+          open("allow_intent.json","w",encoding="utf-8").write(json.dumps(obj,separators=(",",":")))
+          print("ALLOW_INTENT_SHA256="+hashlib.sha256(open("allow_intent.json","rb").read()).hexdigest())
+          PY
+          test -s allow_intent.json
+
+      - name: Assert canonical harmless payload is ALLOW
+        shell: bash
+        run: |
+          set -euo pipefail
+          STATUS=$(curl -sS -o allow_response.json -w "%{http_code}" -X POST "https://admit.ai-admissibility.com/admit" -H "Content-Type: application/json" -H "X-Access-Tier: EVALUATION" --data-binary @allow_intent.json)
+          echo "ALLOW_STATUS=$STATUS"
+          cat allow_response.json
+          test "$STATUS" = "200"
+          python3 - <<'PY'
+          import json
+          obj=json.load(open("allow_response.json","r",encoding="utf-8"))
+          decision=obj.get("decision") or obj.get("verdict") or ((obj.get("record") or {}).get("decision") if isinstance(obj.get("record"),dict) else None)
+          print("ALLOW_DECISION="+str(decision))
+          if decision != "ALLOW": raise SystemExit("ALLOW_DECISION_EXPECTED")
+          print("ALLOW_CHECK=PASS")
+          PY
+
+      - name: Build canonical secret DENY payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib,json
+          lines=["sk-test-123"]
+          joined="\n".join(lines)+"\n"
+          obj={"schema":"intent-v1","repo":"pinfloyd/cnp-action","ref":"refs/heads/main","policy_id":"ai-secrets-v1","added_lines":lines,"added_lines_sha256":hashlib.sha256(joined.encode("utf-8")).hexdigest()}
+          open("deny_intent.json","w",encoding="utf-8").write(json.dumps(obj,separators=(",",":")))
+          print("DENY_INTENT_SHA256="+hashlib.sha256(open("deny_intent.json","rb").read()).hexdigest())
+          PY
+          test -s deny_intent.json
+
+      - name: Assert canonical secret payload is DENY
+        shell: bash
+        run: |
+          set -euo pipefail
+          STATUS=$(curl -sS -o deny_response.json -w "%{http_code}" -X POST "https://admit.ai-admissibility.com/admit" -H "Content-Type: application/json" -H "X-Access-Tier: EVALUATION" --data-binary @deny_intent.json)
+          echo "DENY_STATUS=$STATUS"
+          cat deny_response.json
+          test "$STATUS" = "200"
+          python3 - <<'PY'
+          import json
+          obj=json.load(open("deny_response.json","r",encoding="utf-8"))
+          decision=obj.get("decision") or obj.get("verdict") or ((obj.get("record") or {}).get("decision") if isinstance(obj.get("record"),dict) else None)
+          print("DENY_DECISION="+str(decision))
+          if decision != "DENY": raise SystemExit("DENY_DECISION_EXPECTED")
+          print("DENY_CHECK=PASS")
+          PY
+
+      - name: Final no-bypass proof summary
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "LIVE_SAB_BOUNDARY_PROOF=PASS"
+          echo "PUBKEY_IDENTITY=PASS"
+          echo "RAW_LEGACY_BYPASS_BLOCKED=PASS"
+          echo "CANONICAL_ALLOW=PASS"
+          echo "CANONICAL_DENY=PASS"
