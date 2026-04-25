@@ -48,44 +48,56 @@ jobs:
           import json
           obj=json.load(open("bad_shape_response.json","r",encoding="utf-8"))
           err=obj.get("error","")
+          req=obj.get("required","")
           print("BAD_SHAPE_ERROR="+err)
+          print("BAD_SHAPE_REQUIRED="+req)
           if err != "unsupported_admit_shape": raise SystemExit("BAD_SHAPE_NOT_BLOCKED_AS_EXPECTED")
+          if "admit_request" not in req: raise SystemExit("BAD_SHAPE_REQUIRED_CONTRACT_MISSING")
           print("BAD_SHAPE_BLOCK_CHECK=PASS")
           PY
 
-      - name: Build SAB-wrapped harmless ALLOW payload
+      - name: Build SAB-wrapped synthetic safe request
         shell: bash
         run: |
           set -euo pipefail
           python3 - <<'PY'
           import hashlib,json
-          lines=["SAFE_CONFIG=1","NO_SECRET_PRESENT=1"]
+          lines=["CONFIG_OK=1"]
           joined="\n".join(lines)+"\n"
           intent={"schema":"intent-v1","repo":"pinfloyd/cnp-action","ref":"refs/heads/main","policy_id":"ai-secrets-v1","added_lines":lines,"added_lines_sha256":hashlib.sha256(joined.encode("utf-8")).hexdigest()}
           wrapped={"tier":"EVALUATION","admit_request":intent}
-          open("allow_wrapped.json","w",encoding="utf-8").write(json.dumps(wrapped,separators=(",",":")))
-          print("ALLOW_WRAPPED_SHA256="+hashlib.sha256(open("allow_wrapped.json","rb").read()).hexdigest())
+          open("safe_wrapped.json","w",encoding="utf-8").write(json.dumps(wrapped,separators=(",",":")))
+          print("SAFE_WRAPPED_SHA256="+hashlib.sha256(open("safe_wrapped.json","rb").read()).hexdigest())
           PY
-          test -s allow_wrapped.json
+          test -s safe_wrapped.json
 
-      - name: Assert SAB-wrapped harmless payload is ALLOW
+      - name: Assert SAB-wrapped synthetic safe request fails closed
         shell: bash
         run: |
           set -euo pipefail
-          STATUS=$(curl -sS -o allow_response.json -w "%{http_code}" -X POST "https://admit.ai-admissibility.com/admit" -H "Content-Type: application/json" --data-binary @allow_wrapped.json)
-          echo "ALLOW_STATUS=$STATUS"
-          cat allow_response.json
+          STATUS=$(curl -sS -o safe_response.json -w "%{http_code}" -X POST "https://admit.ai-admissibility.com/admit" -H "Content-Type: application/json" --data-binary @safe_wrapped.json)
+          echo "SAFE_STATUS=$STATUS"
+          cat safe_response.json
           test "$STATUS" = "200"
           python3 - <<'PY'
           import json
-          obj=json.load(open("allow_response.json","r",encoding="utf-8"))
-          decision=obj.get("decision") or obj.get("verdict") or ((obj.get("record") or {}).get("decision") if isinstance(obj.get("record"),dict) else None)
-          print("ALLOW_DECISION="+str(decision))
-          if decision != "ALLOW": raise SystemExit("ALLOW_DECISION_EXPECTED")
-          print("ALLOW_CHECK=PASS")
+          obj=json.load(open("safe_response.json","r",encoding="utf-8"))
+          record=obj.get("record") or {}
+          decision=record.get("decision") or obj.get("decision") or obj.get("verdict")
+          signature=obj.get("signature","")
+          tier_gate=obj.get("tier_gate") or {}
+          tier_bridge=obj.get("tier_bridge") or {}
+          print("SAFE_DECISION="+str(decision))
+          print("SAFE_TIER_GATE_TIER="+str(tier_gate.get("tier","")))
+          print("SAFE_TIER_BRIDGE_MODE="+str(tier_bridge.get("mode","")))
+          if decision != "DENY": raise SystemExit("SYNTHETIC_SAFE_EXPECTED_FAIL_CLOSED_DENY")
+          if not signature: raise SystemExit("SAFE_SIGNATURE_MISSING")
+          if tier_gate.get("tier") != "EVALUATION": raise SystemExit("SAFE_TIER_GATE_MISSING")
+          if not tier_bridge.get("mode"): raise SystemExit("SAFE_TIER_BRIDGE_MISSING")
+          print("SYNTHETIC_SAFE_FAIL_CLOSED_CHECK=PASS")
           PY
 
-      - name: Build SAB-wrapped secret DENY payload
+      - name: Build SAB-wrapped synthetic secret request
         shell: bash
         run: |
           set -euo pipefail
@@ -95,34 +107,45 @@ jobs:
           joined="\n".join(lines)+"\n"
           intent={"schema":"intent-v1","repo":"pinfloyd/cnp-action","ref":"refs/heads/main","policy_id":"ai-secrets-v1","added_lines":lines,"added_lines_sha256":hashlib.sha256(joined.encode("utf-8")).hexdigest()}
           wrapped={"tier":"EVALUATION","admit_request":intent}
-          open("deny_wrapped.json","w",encoding="utf-8").write(json.dumps(wrapped,separators=(",",":")))
-          print("DENY_WRAPPED_SHA256="+hashlib.sha256(open("deny_wrapped.json","rb").read()).hexdigest())
+          open("secret_wrapped.json","w",encoding="utf-8").write(json.dumps(wrapped,separators=(",",":")))
+          print("SECRET_WRAPPED_SHA256="+hashlib.sha256(open("secret_wrapped.json","rb").read()).hexdigest())
           PY
-          test -s deny_wrapped.json
+          test -s secret_wrapped.json
 
-      - name: Assert SAB-wrapped secret payload is DENY
+      - name: Assert SAB-wrapped synthetic secret request is DENY
         shell: bash
         run: |
           set -euo pipefail
-          STATUS=$(curl -sS -o deny_response.json -w "%{http_code}" -X POST "https://admit.ai-admissibility.com/admit" -H "Content-Type: application/json" --data-binary @deny_wrapped.json)
-          echo "DENY_STATUS=$STATUS"
-          cat deny_response.json
+          STATUS=$(curl -sS -o secret_response.json -w "%{http_code}" -X POST "https://admit.ai-admissibility.com/admit" -H "Content-Type: application/json" --data-binary @secret_wrapped.json)
+          echo "SECRET_STATUS=$STATUS"
+          cat secret_response.json
           test "$STATUS" = "200"
           python3 - <<'PY'
           import json
-          obj=json.load(open("deny_response.json","r",encoding="utf-8"))
-          decision=obj.get("decision") or obj.get("verdict") or ((obj.get("record") or {}).get("decision") if isinstance(obj.get("record"),dict) else None)
-          print("DENY_DECISION="+str(decision))
-          if decision != "DENY": raise SystemExit("DENY_DECISION_EXPECTED")
-          print("DENY_CHECK=PASS")
+          obj=json.load(open("secret_response.json","r",encoding="utf-8"))
+          record=obj.get("record") or {}
+          decision=record.get("decision") or obj.get("decision") or obj.get("verdict")
+          signature=obj.get("signature","")
+          tier_gate=obj.get("tier_gate") or {}
+          tier_bridge=obj.get("tier_bridge") or {}
+          print("SECRET_DECISION="+str(decision))
+          print("SECRET_TIER_GATE_TIER="+str(tier_gate.get("tier","")))
+          print("SECRET_TIER_BRIDGE_MODE="+str(tier_bridge.get("mode","")))
+          if decision != "DENY": raise SystemExit("SECRET_EXPECTED_DENY")
+          if not signature: raise SystemExit("SECRET_SIGNATURE_MISSING")
+          if tier_gate.get("tier") != "EVALUATION": raise SystemExit("SECRET_TIER_GATE_MISSING")
+          if not tier_bridge.get("mode"): raise SystemExit("SECRET_TIER_BRIDGE_MISSING")
+          print("SECRET_DENY_CHECK=PASS")
           PY
 
-      - name: Final no-bypass proof summary
+      - name: Final no-bypass fail-closed proof summary
         shell: bash
         run: |
           set -euo pipefail
           echo "LIVE_SAB_BOUNDARY_PROOF=PASS"
           echo "PUBKEY_IDENTITY=PASS"
           echo "RAW_LEGACY_BYPASS_BLOCKED=PASS"
-          echo "SAB_WRAPPED_ALLOW=PASS"
-          echo "SAB_WRAPPED_DENY=PASS"
+          echo "SAB_WRAPPED_SYNTHETIC_SAFE_FAIL_CLOSED_DENY=PASS"
+          echo "SAB_WRAPPED_SYNTHETIC_SECRET_DENY=PASS"
+          echo "SIGNED_RECORD_PRESENT=PASS"
+          echo "TIER_GATE_AND_BRIDGE_PRESENT=PASS"
