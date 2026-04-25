@@ -53,7 +53,7 @@ jobs:
           print("BAD_SHAPE_BLOCK_CHECK=PASS")
           PY
 
-      - name: Build canonical harmless ALLOW payload
+      - name: Build SAB-wrapped harmless ALLOW payload
         shell: bash
         run: |
           set -euo pipefail
@@ -61,17 +61,18 @@ jobs:
           import hashlib,json
           lines=["SAFE_CONFIG=1","NO_SECRET_PRESENT=1"]
           joined="\n".join(lines)+"\n"
-          obj={"schema":"intent-v1","repo":"pinfloyd/cnp-action","ref":"refs/heads/main","policy_id":"ai-secrets-v1","added_lines":lines,"added_lines_sha256":hashlib.sha256(joined.encode("utf-8")).hexdigest()}
-          open("allow_intent.json","w",encoding="utf-8").write(json.dumps(obj,separators=(",",":")))
-          print("ALLOW_INTENT_SHA256="+hashlib.sha256(open("allow_intent.json","rb").read()).hexdigest())
+          intent={"schema":"intent-v1","repo":"pinfloyd/cnp-action","ref":"refs/heads/main","policy_id":"ai-secrets-v1","added_lines":lines,"added_lines_sha256":hashlib.sha256(joined.encode("utf-8")).hexdigest()}
+          wrapped={"tier":"EVALUATION","admit_request":intent}
+          open("allow_wrapped.json","w",encoding="utf-8").write(json.dumps(wrapped,separators=(",",":")))
+          print("ALLOW_WRAPPED_SHA256="+hashlib.sha256(open("allow_wrapped.json","rb").read()).hexdigest())
           PY
-          test -s allow_intent.json
+          test -s allow_wrapped.json
 
-      - name: Assert canonical harmless payload is ALLOW
+      - name: Assert SAB-wrapped harmless payload is ALLOW
         shell: bash
         run: |
           set -euo pipefail
-          STATUS=$(curl -sS -o allow_response.json -w "%{http_code}" -X POST "https://admit.ai-admissibility.com/admit" -H "Content-Type: application/json" -H "X-Access-Tier: EVALUATION" --data-binary @allow_intent.json)
+          STATUS=$(curl -sS -o allow_response.json -w "%{http_code}" -X POST "https://admit.ai-admissibility.com/admit" -H "Content-Type: application/json" --data-binary @allow_wrapped.json)
           echo "ALLOW_STATUS=$STATUS"
           cat allow_response.json
           test "$STATUS" = "200"
@@ -84,7 +85,7 @@ jobs:
           print("ALLOW_CHECK=PASS")
           PY
 
-      - name: Build canonical secret DENY payload
+      - name: Build SAB-wrapped secret DENY payload
         shell: bash
         run: |
           set -euo pipefail
@@ -92,17 +93,18 @@ jobs:
           import hashlib,json
           lines=["sk-test-123"]
           joined="\n".join(lines)+"\n"
-          obj={"schema":"intent-v1","repo":"pinfloyd/cnp-action","ref":"refs/heads/main","policy_id":"ai-secrets-v1","added_lines":lines,"added_lines_sha256":hashlib.sha256(joined.encode("utf-8")).hexdigest()}
-          open("deny_intent.json","w",encoding="utf-8").write(json.dumps(obj,separators=(",",":")))
-          print("DENY_INTENT_SHA256="+hashlib.sha256(open("deny_intent.json","rb").read()).hexdigest())
+          intent={"schema":"intent-v1","repo":"pinfloyd/cnp-action","ref":"refs/heads/main","policy_id":"ai-secrets-v1","added_lines":lines,"added_lines_sha256":hashlib.sha256(joined.encode("utf-8")).hexdigest()}
+          wrapped={"tier":"EVALUATION","admit_request":intent}
+          open("deny_wrapped.json","w",encoding="utf-8").write(json.dumps(wrapped,separators=(",",":")))
+          print("DENY_WRAPPED_SHA256="+hashlib.sha256(open("deny_wrapped.json","rb").read()).hexdigest())
           PY
-          test -s deny_intent.json
+          test -s deny_wrapped.json
 
-      - name: Assert canonical secret payload is DENY
+      - name: Assert SAB-wrapped secret payload is DENY
         shell: bash
         run: |
           set -euo pipefail
-          STATUS=$(curl -sS -o deny_response.json -w "%{http_code}" -X POST "https://admit.ai-admissibility.com/admit" -H "Content-Type: application/json" -H "X-Access-Tier: EVALUATION" --data-binary @deny_intent.json)
+          STATUS=$(curl -sS -o deny_response.json -w "%{http_code}" -X POST "https://admit.ai-admissibility.com/admit" -H "Content-Type: application/json" --data-binary @deny_wrapped.json)
           echo "DENY_STATUS=$STATUS"
           cat deny_response.json
           test "$STATUS" = "200"
@@ -122,5 +124,5 @@ jobs:
           echo "LIVE_SAB_BOUNDARY_PROOF=PASS"
           echo "PUBKEY_IDENTITY=PASS"
           echo "RAW_LEGACY_BYPASS_BLOCKED=PASS"
-          echo "CANONICAL_ALLOW=PASS"
-          echo "CANONICAL_DENY=PASS"
+          echo "SAB_WRAPPED_ALLOW=PASS"
+          echo "SAB_WRAPPED_DENY=PASS"
