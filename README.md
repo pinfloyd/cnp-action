@@ -42,3 +42,21 @@ For real commercial use above the public GitHub surfaces, use the Hosted Authori
 
 This is the single canonical inquiry entry.
 GitHub is not checkout.
+---
+
+## Platform-native policy vs external admission
+
+Pre-run policy is necessary. External admission is the stronger boundary.
+
+Platform-native controls improve the executor. External admission separates execution from authority.
+
+If execution can proceed without an external allow decision, the system has policy, but not external admission authority.
+
+**Surrogate Boundary Test:** Can execution proceed without an external allow decision?
+
+**No Admission = No Execution.**
+
+Learn more:
+- https://ai-admissibility.com/platform-native-policy/
+- https://ai-admissibility.com/external-admission-authority/
+- https://ai-admissibility.com/surrogate-boundary-test/
