@@ -39,7 +39,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          printf '{"legacy":"raw_bypass_probe","payload":"OPENAI_API_KEY=probe"}' > bad_shape.json
+          printf '{"legacy":"raw_bypass_probe","payload":"LEGACY_BYPASS_PROBE=1"}' > bad_shape.json
           STATUS=$(curl -sS -o bad_shape_response.json -w "%{http_code}" -X POST "https://admit.ai-admissibility.com/admit" -H "Content-Type: application/json" --data-binary @bad_shape.json)
           echo "BAD_SHAPE_STATUS=$STATUS"
           cat bad_shape_response.json
@@ -149,3 +149,4 @@ jobs:
           echo "SAB_WRAPPED_SYNTHETIC_SECRET_DENY=PASS"
           echo "SIGNED_RECORD_PRESENT=PASS"
           echo "TIER_GATE_AND_BRIDGE_PRESENT=PASS"
+

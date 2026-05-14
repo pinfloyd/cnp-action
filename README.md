@@ -1,58 +1,67 @@
 # cnp-action
 
-**Controlled Negotiation Protocol (CNP) Gate for GitHub Actions**
+**Fail-closed admission gate for GitHub Actions**
 
-Block risky workflow changes before CI continues.
-
-This repository is the install / Action / product surface for the public controlled negotiation protocol (cnp) path.
+`cnp-action` is the public GitHub Action surface for AI Admissibility / controlled negotiation protocol (CNP) evaluation.
+It is designed to stop execution when required admission context is missing, invalid, or incomplete.
 
 ## What it is
-This is the GitHub Action-facing product surface for controlled negotiation protocol (cnp) control.
-It is meant to make one thing clear fast:
-this is not another scanner and not a post-hoc reporting layer.
-This is an execution gate for GitHub automation.
 
-## What it does
-- Blocks risky workflow changes before CI continues.
-- Acts as an external execution gate for GitHub automation.
-- Stops unsafe AI / automation changes before they execute.
+- A fail-closed gate for GitHub automation.
+- A public Action-facing surface for external admission evaluation.
+- A way to make one thing clear fast: execution must not continue on missing admission context.
 
 ## What it is not
-- Not another scanner.
+
+- Not a scanner.
+- Not a post-hoc reporting layer.
 - Not a generic security toolbox.
-- Not architecture sold as an abstraction.
+- Not a self-authorizing policy loop.
 
-## Install meaning
-This surface exists to show the product-facing path:
-install, understand the outcome, and understand the commercial path above the public Action surface.
+## What it does
 
-## Commercial step
+- Checks for required admission inputs.
+- Rejects incomplete or invalid runtime context.
+- Fails closed instead of silently continuing.
 
-For real commercial use above the public GitHub surfaces, use the Hosted Authority inquiry path:
+## Example usage
 
-## Current route
+```yaml
+jobs:
+  admission-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: pinfloyd/cnp-action@v0.1.1
+        with:
+          authority-url: https://example-authority.company.tld/admit
+          authority-pubkey: sha256:replace-with-pinned-authority-pubkey
+          policy-id: ai-secrets-v1
+          trust-verdict: PASS
+```
 
-1. Understand the outcome here.
-2. Evaluate the proof / meaning surface separately if needed.
-3. Move to the Hosted Authority inquiry path for the commercial path.
+## Input meaning
 
-## Request access
+- `authority-url` - external authority endpoint URL.
+- `authority-pubkey` - pinned authority public key or pinned authority identity value used by the caller.
+- `policy-id` - policy identifier expected by the admission flow.
+- `trust-verdict` - runtime trust verdict; must be `PASS` for the Action to proceed beyond preflight checks.
+
+## Commercial route
+
+For real commercial use above the public GitHub surface, use the canonical inquiry entry:
 
 [Request access](https://ai-admissibility.com/request)
 
-This is the single canonical inquiry entry.
 GitHub is not checkout.
----
+The public Action surface is an evaluation / understanding path, not the commercial fulfillment path.
 
-## Platform-native policy vs external admission
+## Core message
 
 Pre-run policy is necessary. External admission is the stronger boundary.
 
 Platform-native controls improve the executor. External admission separates execution from authority.
 
 If execution can proceed without an external allow decision, the system has policy, but not external admission authority.
-
-**Surrogate Boundary Test:** Can execution proceed without an external allow decision?
 
 **No Admission = No Execution.**
 
