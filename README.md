@@ -1,8 +1,8 @@
-# cnp-action
+# AI Admissibility Action
 
 **Fail-closed admission gate for GitHub Actions**
 
-`cnp-action` is the public GitHub Action surface for AI Admissibility / controlled negotiation protocol (CNP) evaluation.
+`cnp-action` is the public GitHub Action surface for AI Admissibility Action / controlled negotiation protocol (CNP) evaluation.
 It is designed to stop execution when required admission context is missing, invalid, or incomplete.
 
 ## What it is
