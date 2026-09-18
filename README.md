@@ -1,71 +1,44 @@
-# AI Admissibility Action
+# AI Admissibility Action — compatibility surface
 
-**Fail-closed admission gate for GitHub Actions**
+This repository keeps the historical workflow slug `pinfloyd/cnp-action` available for compatibility with existing references.
 
-AI Admissibility Action is the public GitHub Action surface for external pre-execution admission. The technical workflow slug remains `pinfloyd/cnp-action` so existing GitHub Action usage does not break.
-It is designed to stop execution when required admission context is missing, invalid, or incomplete.
+It is **not** the canonical repository for new public evaluation installs.
 
-## What it is
+For new evaluations, use:
 
-- A fail-closed gate for GitHub automation.
-- A public Action-facing surface for external admission evaluation.
-- A way to make one thing clear fast: execution must not continue on missing admission context.
+https://github.com/pinfloyd/ai-admissibility-action
 
-## What it is not
+Official product surface:
 
-- Not a scanner.
-- Not a post-hoc reporting layer.
-- Not a generic security toolbox.
-- Not a self-authorizing policy loop.
+https://ai-admissibility.com/
 
-## What it does
+## Current implementation status
 
-- Checks for required admission inputs.
-- Rejects incomplete or invalid runtime context.
-- Fails closed instead of silently continuing.
+The composite Action in this repository performs fail-closed preflight validation but **does not yet call a runtime authority**. After successful preflight it intentionally stops with:
 
-## Example usage
+`FAIL_CLOSED: runtime authority integration is not wired yet`
 
-```yaml
-jobs:
-  admission-check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: pinfloyd/cnp-action@v0.1.1
-        with:
-          authority-url: https://example-authority.company.tld/admit
-          authority-pubkey: sha256:replace-with-pinned-authority-pubkey
-          policy-id: ai-secrets-v1
-          trust-verdict: PASS
-```
+That behavior is deliberate. This repository must not be interpreted as a working production authority integration until a runtime contract is implemented and independently verified.
 
-## Input meaning
+## What it demonstrates
 
-- `authority-url` - external authority endpoint URL.
-- `authority-pubkey` - pinned authority public key or pinned authority identity value used by the caller.
-- `policy-id` - policy identifier expected by the admission flow.
-- `trust-verdict` - runtime trust verdict; must be `PASS` for the Action to proceed beyond preflight checks.
+- required admission inputs are checked;
+- placeholder or incomplete values are rejected;
+- a non-PASS trust verdict is rejected;
+- execution does not silently continue when runtime authority integration is absent.
 
-## Commercial route
+## What it does not claim
 
-For real commercial use above the public GitHub surface, use the canonical inquiry entry:
+- no live production authority integration;
+- no customer-specific no-bypass guarantee;
+- no self-serve production access;
+- no scanner or post-hoc monitoring capability.
 
-[Request access](https://ai-admissibility.com/request)
+## Canonical surfaces
 
-GitHub is not checkout.
-The public Action surface is an evaluation / understanding path, not the commercial fulfillment path.
-
-## Core message
-
-Pre-run policy is necessary. External admission is the stronger boundary.
-
-Platform-native controls improve the executor. External admission separates execution from authority.
-
-If execution can proceed without an external allow decision, the system has policy, but not external admission authority.
+- Product and documentation: https://ai-admissibility.com/
+- Current Marketplace evaluation Action: https://github.com/pinfloyd/ai-admissibility-action
+- Boundary architecture / proof: https://github.com/pinfloyd/ai-admissibility-boundary
+- Request access: https://ai-admissibility.com/request
 
 **No Admission = No Execution.**
-
-Learn more:
-- https://ai-admissibility.com/platform-native-policy/
-- https://ai-admissibility.com/external-admission-authority/
-- https://ai-admissibility.com/surrogate-boundary-test/
