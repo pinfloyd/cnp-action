@@ -20,6 +20,8 @@ The composite Action in this repository performs fail-closed preflight validatio
 
 That behavior is deliberate. This repository must not be interpreted as a working production authority integration.
 
+Historical direct-runtime self-test workflows that expected an open public `/pubkey` or direct public ALLOW/DENY access have been retired from `main`. The active public runtime check is the bounded `verify-public-boundary-contract-v2` workflow.
+
 ## What it demonstrates
 
 - required admission inputs are checked;
