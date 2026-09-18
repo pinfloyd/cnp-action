@@ -4,10 +4,10 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ["README.md", "action.yml", ".github/workflows/verify-public-boundary-contract.yml"]
+    paths: ["README.md", "action.yml", "HOSTED_AUTHORITY.md", "ROADMAP.md", "CHANGELOG.md", "SECURITY.md", "SUPPORT.md", "examples/**", ".github/workflows/verify-public-boundary-contract.yml"]
   pull_request:
     branches: [main]
-    paths: ["README.md", "action.yml", ".github/workflows/verify-public-boundary-contract.yml"]
+    paths: ["README.md", "action.yml", "HOSTED_AUTHORITY.md", "ROADMAP.md", "CHANGELOG.md", "SECURITY.md", "SUPPORT.md", "examples/**", ".github/workflows/verify-public-boundary-contract.yml"]
   schedule:
     - cron: "17 3 * * *"
 
