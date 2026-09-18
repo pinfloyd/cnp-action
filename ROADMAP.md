@@ -2,32 +2,40 @@
 
 ## Current proven stage
 
-The repository currently provides:
-- a private Action install surface;
-- deterministic preflight fail-closed Action behavior;
-- a private self-test workflow with two successful proven runs;
-- canonicalized README, usage example, hosted-authority surface, and changelog surface;
-- a private draft release anchor for `v0.0.1`.
+This public repository is a compatibility surface, not the canonical runtime.
 
-## Next intended surface steps
+Current proven properties include:
 
-The next intended surface work is:
-- keep the product surface internally consistent;
-- reduce ambiguity between proof surface and Action surface;
-- preserve one commercial path through Hosted Authority;
-- maintain fail-closed semantics while the repository remains private.
+- deterministic fail-closed preflight behavior;
+- compatibility for the historical `pinfloyd/cnp-action` slug;
+- public documentation and examples;
+- an active public boundary-contract regression workflow;
+- explicit separation between this Action and the canonical installed boundary.
 
-## Later technical hardening
+## Current maintenance direction
 
-Later technical hardening may include:
-- line-ending normalization for deterministic file handling;
-- stricter release-surface normalization;
-- additional internal verification of freeze artifacts.
+The repository should remain small and unambiguous:
 
-## Not yet claimed
+- preserve compatibility for existing references;
+- keep fail-closed behavior intact;
+- keep the public regression workflow aligned with `proof-status.json`;
+- avoid reintroducing public checkout, payment, credential issuance, or hosted-runtime claims;
+- point new evaluation users to `pinfloyd/ai-admissibility-action`;
+- point canonical live demonstration traffic to https://ai-admissibility.com/canonical-pilot/.
+
+## Historical material
+
+Older release and workflow history may refer to private self-tests, direct public authority probing, or Hosted Authority assumptions from earlier product stages.
+
+Those are historical artifacts, not current public runtime claims.
+
+## Not claimed
 
 This roadmap does not claim:
-- live production authority availability;
-- public production install readiness;
-- public Marketplace readiness;
-- public hosted authority availability from this repository.
+
+- live production authority integration in this Action;
+- customer-specific no-bypass protection;
+- public production access;
+- public checkout or credential issuance.
+
+**No Admission = No Execution.**
