@@ -2,27 +2,36 @@
 
 ## Current surface state
 
-Head state now includes:
-- canonicalized README product surface;
-- deterministic preflight fail-closed Action contract;
-- canonicalized basic usage example;
-- canonicalized hosted authority surface;
-- private self-test workflow with two successful proven runs;
-- private draft release anchor for `v0.0.1`.
+The current `main` branch is a public compatibility and evaluation surface.
 
-## v0.0.1
+Current state includes:
 
-`v0.0.1` remains the current draft release anchor.
+- README language aligned to showcase / evaluation semantics;
+- deterministic preflight fail-closed Action behavior;
+- public boundary-contract verification against the canonical site;
+- removal of obsolete manual workflows that expected an open public pubkey endpoint or direct public ALLOW/DENY authority access.
 
-It currently represents:
-- a private Action repository baseline;
-- an install-surface contract anchor;
-- a private proof path for fail-closed behavior;
-- a draft release state, not a public release claim.
+## Historical releases and runs
 
-## Not claimed
+Older tags, commits, and workflow runs are retained as historical evidence.
 
-This changelog does not claim:
-- live production authority availability;
-- public Marketplace distribution;
-- public production install readiness.
+They may contain terms or assumptions from earlier stages, including:
+
+- private repository language;
+- Hosted Authority commercial-path language;
+- direct `/pubkey` probing that expected HTTP 200;
+- direct public `/admit` ALLOW/DENY tests.
+
+Those historical objects are not rewritten and do not supersede the current public contract.
+
+## Current public contract
+
+Current public semantics are:
+
+- canonical live demonstration: https://ai-admissibility.com/canonical-pilot/
+- public identity endpoint: intentionally protected;
+- anonymous admission: intentionally rejected;
+- Marketplace / Action surfaces: evaluation only;
+- customer production no-bypass: not claimed by this repository.
+
+**No Admission = No Execution.**
