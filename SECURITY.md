@@ -1,28 +1,39 @@
 # Security
 
-This repository is currently in private contract-anchor stage.
+## Current scope
 
-## Security scope
+This repository is a public compatibility and evaluation surface.
 
-At this stage, the repository provides:
-- action metadata anchor;
-- README surface;
-- basic usage example;
-- evaluation-only license boundary;
-- support and privacy surface.
+It provides:
+
+- Action metadata;
+- deterministic fail-closed preflight behavior;
+- public documentation and examples;
+- the public boundary-contract regression workflow.
+
+It does **not** provide a customer production authority integration.
 
 ## Reporting
 
-Potential security issues should be handled through a separate written disclosure path.
+Do not publish suspected vulnerabilities, credentials, private keys, internal endpoints, or sensitive deployment details in public issues or pull requests.
+
+Use the private contact path:
+
+**governance@ai-admissibility.com**
+
+Include the affected repository, version or commit, reproducible steps, expected versus actual behavior, and impact summary.
 
 ## Current boundary
 
-At this stage, the repository does not claim:
+This repository does not claim:
+
 - live production authority integration;
-- production service availability;
-- public Marketplace distribution;
-- production security commitments.
+- customer-specific no-bypass protection;
+- public production access;
+- credential issuance;
+- payment or checkout infrastructure;
+- universal security or compliance guarantees.
 
-## Future state
+The canonical public demonstration is:
 
-If production authority operation or public distribution is introduced later, a separate production security process may be required.
+https://ai-admissibility.com/canonical-pilot/
