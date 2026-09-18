@@ -20,6 +20,19 @@ The composite Action in this repository performs fail-closed preflight validatio
 
 That behavior is deliberate. This repository must not be interpreted as a working production authority integration until a runtime contract is implemented and independently verified.
 
+## Public contract verification
+
+The repository also contains a secretless public-contract workflow that checks the currently published boundary status without bypassing the protected gate.
+
+It verifies:
+- published `proof-status-v2`;
+- canonical identity `AI_BOUNDARY_RELEASE_V1`;
+- the pinned canonical public-key SHA-256;
+- anonymous public gate rejection;
+- canonical website routes.
+
+This workflow is verification of the **public protected contract**. It is not customer execution, not production ALLOW proof, and not a bypass test using private credentials.
+
 ## What it demonstrates
 
 - required admission inputs are checked;
