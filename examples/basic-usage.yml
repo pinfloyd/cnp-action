@@ -7,16 +7,18 @@ jobs:
   preflight-example:
     runs-on: ubuntu-latest
     steps:
-      - name: Example contract-anchor invocation
+      - name: Example compatibility invocation
         uses: ./
+        continue-on-error: true
         with:
-          authority-url: "https://admit.ai-admissibility.com"
-          authority-pubkey: "EXAMPLE_PUBKEY_NOT_LIVE"
-          policy-id: "example-policy"
+          authority-url: "https://example-authority.company.tld/admit"
+          authority-pubkey: "sha256:replace-with-pinned-authority-pubkey"
+          policy-id: "ai-secrets-v1"
+          trust-verdict: "PASS"
 
       - name: Example note
         if: ${{ always() }}
         run: |
-          echo "This example anchors the current Action contract surface."
-          echo "It does not claim a live production authority integration."
-          echo "It does not claim a public production install path."
+          echo "This compatibility Action intentionally fails closed after preflight."
+          echo "It does not call the canonical installed runtime."
+          echo "It does not provide a customer production authority integration."
