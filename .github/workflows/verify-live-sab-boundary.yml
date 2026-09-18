@@ -55,15 +55,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-
-          PUBKEY_STATUS=$(curl -sS -o pubkey-response.txt -w "%{http_code}"             "https://admit.ai-admissibility.com/pubkey")
+          PUBKEY_STATUS=$(curl -sS -o pubkey-response.txt -w "%{http_code}" "https://admit.ai-admissibility.com/pubkey")
           echo "PUBLIC_PUBKEY_STATUS=$PUBKEY_STATUS"
           case "$PUBKEY_STATUS" in
             401|403|404) ;;
             *) echo "Unexpected public pubkey status"; exit 1 ;;
           esac
 
-          ADMIT_STATUS=$(curl -sS -o admit-response.txt -w "%{http_code}"             -X POST "https://admit.ai-admissibility.com/admit"             -H "Content-Type: application/json"             --data-binary '{"invalid":"github-public-contract-probe"}')
+          ADMIT_STATUS=$(curl -sS -o admit-response.txt -w "%{http_code}" -X POST "https://admit.ai-admissibility.com/admit" -H "Content-Type: application/json" --data-binary '{"invalid":"github-public-contract-probe"}')
           echo "ANONYMOUS_INVALID_ADMIT_STATUS=$ADMIT_STATUS"
           case "$ADMIT_STATUS" in
             400|401|403|404) ;;
@@ -76,7 +75,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          for URL in             "https://ai-admissibility.com/"             "https://ai-admissibility.com/canonical-pilot/"             "https://ai-admissibility.com/request"             "https://ai-admissibility.com/private-deployment"
+          for URL in "https://ai-admissibility.com/" "https://ai-admissibility.com/canonical-pilot/" "https://ai-admissibility.com/request" "https://ai-admissibility.com/private-deployment"
           do
             STATUS=$(curl -sS -L -o /dev/null -w "%{http_code}" "$URL")
             echo "$URL -> $STATUS"
