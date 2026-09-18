@@ -1,0 +1,26 @@
+name: external-mail-http-probe
+
+on:
+  push:
+    branches:
+      - diag/external-mail-http-probe-2026-09-18
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: DNS and HTTP connectivity probe
+        shell: bash
+        run: |
+          set -euxo pipefail
+          echo "===== DNS ====="
+          getent ahosts mail.ai-admissibility.com || true
+          echo "===== HTTP ROOT ====="
+          curl -4 -v --connect-timeout 10 --max-time 20 http://mail.ai-admissibility.com/ -o /dev/null
+          echo "===== ACME PATH ====="
+          curl -4 -v --connect-timeout 10 --max-time 20 http://mail.ai-admissibility.com/.well-known/acme-challenge/github-external-probe -o /dev/null || true
+          echo "EXTERNAL_MAIL_HTTP_PROBE=COMPLETE"
