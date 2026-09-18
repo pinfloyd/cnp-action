@@ -1,97 +1,52 @@
-# Hosted Authority
+# Hosted Authority — historical/reference note
 
-## Purpose
+## Current status
 
-Hosted Authority is the canonical commercial inquiry surface above the current Action surface.
+This repository is the compatibility Action surface for older references to `pinfloyd/cnp-action`.
 
-## What it is
+It is **not** the canonical installed runtime, not a public production authority, not a checkout surface, and not a credential issuer.
 
-Hosted Authority is intended to provide:
+The current public product and demonstration surface is:
 
-- an external authority endpoint;
-- signed admit or deny decisions;
-- a stable public-key pin;
-- a managed policy path;
-- use under a separate written commercial path.
+https://ai-admissibility.com/
 
-## What it is not
+The current canonical live demonstration uses the installed boundary identity:
 
-At the current stage, Hosted Authority is not:
+`AI_BOUNDARY_RELEASE_V1`
 
-- a live service claimed by this repository;
-- a public production install path;
-- a public Marketplace listing;
-- a claim that production authority integration is already available here.
+## Repository role
 
-## Current repository boundary
+This repository currently provides:
 
-At the current stage, this repository provides:
+- compatibility for the historical Action slug;
+- deterministic fail-closed preflight behavior;
+- public documentation and examples;
+- the public boundary-contract regression workflow.
 
-- action metadata anchor;
-- private self-test proof path;
-- deterministic preflight fail-closed behavior;
-- usage example surface;
-- README, license, support, privacy, and security surface;
-- release surface.
+Runtime authority integration is not wired in this Action.
 
-## Canonical inquiry entry
+## Historical Hosted Authority material
 
-This file is the single canonical inquiry surface for Hosted Authority or separate written commercial use.
+Older versions of this repository described a Hosted Authority commercial path and public runtime assumptions that no longer represent the current public product surface.
 
-Parallel inquiry channels are not part of this surface.
+Those earlier concepts remain part of repository history and published tags. They are not rewritten.
 
-## Required intake fields
+## Current collaboration path
 
-A qualified inquiry should include:
+The website and GitHub repositories are showcase, documentation, proof, and demonstration surfaces.
 
-1. work email or contact channel
-2. company or team name
-3. use case summary
-4. current workflow environment
-5. what must be decided before execution
-6. current controls and gaps
-7. why existing scanner or post-hoc tooling is insufficient
+For research, integration, collaboration, or deployment discussions:
 
-## Optional intake fields
+**governance@ai-admissibility.com**
 
-A qualified inquiry may also include:
+No public checkout, payment, automatic credential issuance, or customer production runtime is provided by this repository.
 
-8. deployment timeline
-9. decision owner or function
-10. additional context
+## Current verification
 
-## Deterministic routing states
+The active public regression contract is:
 
-Inquiry handling is shaped toward one of four states only:
+`.github/workflows/verify-public-boundary-contract.yml`
 
-- DISQUALIFY_SCANNER
-- WEAK_FIT
-- RETURN_TO_PUBLIC_SURFACES
-- HOSTED_AUTHORITY_FIT
+It verifies the published proof-status contract, protected public identity endpoint, rejected anonymous admission, and canonical public routes.
 
-## Qualification boundary
-
-A Hosted Authority fit requires a clear need for an external pre-controlled negotiation protocol (cnp) decision layer for automated or AI-driven workflows.
-
-If the request is primarily for scanner behavior, generic detection, or post-hoc monitoring, it is not a Hosted Authority fit.
-
-If the request first needs more proof or install understanding, the path returns to:
-
-1. `cnp-boundary`
-2. `cnp-action`
-
-## Transition point
-
-The commercial transition happens when a user moves from:
-
-- evaluating the current Action surface to
-- requesting Hosted Authority or separate written commercial use through this inquiry surface.
-
-## Commercial step
-
-For real commercial use above the public GitHub surfaces, use the Hosted Authority inquiry path:
-
-
-## Request access
-
-[Request access](https://ai-admissibility.com/request)
+**No Admission = No Execution.**
