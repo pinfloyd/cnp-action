@@ -1,0 +1,58 @@
+name: verify-public-boundary-contract-v2
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, ci/public-boundary-regression-v2-2026-09-18]
+    paths: ["README.md", "action.yml", ".github/workflows/verify-public-boundary-contract.yml"]
+  pull_request:
+    branches: [main]
+    paths: ["README.md", "action.yml", ".github/workflows/verify-public-boundary-contract.yml"]
+  schedule:
+    - cron: "17 3 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Published proof status
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsS -H 'Cache-Control: no-cache' "https://ai-admissibility.com/proof-status.json?ts=$(date +%s)" -o proof.json
+          python3 - <<'PY'
+          import json
+          o=json.load(open("proof.json"))
+          assert o["schema"]=="ai-admissibility-proof-status-v2"
+          assert o["overall_status"]=="PASS"
+          s=o["public_summary"]
+          assert s["canonical_boundary_identity"]=="verified"
+          assert s["public_identity_endpoint"]=="protected"
+          assert s["anonymous_admission"]=="rejected"
+          a=o["canonical_authority"]
+          assert a["authority_id"]=="AI_BOUNDARY_RELEASE_V1"
+          assert a["public_key_sha256"]=="070ecb8410d8a261b0c173f9f1c42022f5c8d946a42d4b8b402e3460656480d4"
+          print("PUBLISHED_PROOF_STATUS=PASS")
+          PY
+      - name: Protected public gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=$(curl -sS -o /dev/null -w "%{http_code}" https://admit.ai-admissibility.com/pubkey)
+          A=$(curl -sS -o /dev/null -w "%{http_code}" -X POST -H 'Content-Type: application/json' --data '{}' https://admit.ai-admissibility.com/admit)
+          case "$P" in 401|403|404) ;; *) exit 1;; esac
+          case "$A" in 400|401|403|404) ;; *) exit 1;; esac
+          echo "PUBLIC_GATE=PASS pubkey=$P admit=$A"
+      - name: Canonical routes
+        shell: bash
+        run: |
+          set -euo pipefail
+          for u in / /canonical-pilot/ /request /private-deployment; do
+            test "$(curl -sS -L -o /dev/null -w "%{http_code}" "https://ai-admissibility.com$u")" = "200"
+          done
+          echo "CANONICAL_ROUTES=PASS"
+          echo "PUBLIC_BOUNDARY_CONTRACT=PASS"
