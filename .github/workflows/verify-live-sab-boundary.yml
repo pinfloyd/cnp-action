@@ -2,6 +2,20 @@ name: verify-public-boundary-contract
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "action.yml"
+      - "README.md"
+      - ".github/workflows/verify-live-sab-boundary.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "action.yml"
+      - "README.md"
+      - ".github/workflows/verify-live-sab-boundary.yml"
   schedule:
     - cron: "17 3 * * *"
 
