@@ -3,7 +3,7 @@ name: verify-public-boundary-contract-v2
 on:
   workflow_dispatch:
   push:
-    branches: [main, ci/public-boundary-regression-v2-2026-09-18]
+    branches: [main]
     paths: ["README.md", "action.yml", ".github/workflows/verify-public-boundary-contract.yml"]
   pull_request:
     branches: [main]
