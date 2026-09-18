@@ -22,6 +22,8 @@ That behavior is deliberate. This repository must not be interpreted as a workin
 
 Historical direct-runtime self-test workflows that expected an open public `/pubkey` or direct public ALLOW/DENY access have been retired from `main`. The active public runtime check is the bounded `verify-public-boundary-contract-v2` workflow.
 
+Supporting security, support, roadmap, changelog, and usage-example files are aligned to the same public compatibility semantics.
+
 ## What it demonstrates
 
 - required admission inputs are checked;
