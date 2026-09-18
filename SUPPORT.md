@@ -1,30 +1,32 @@
 # Support
 
-This repository is currently in private contract-anchor stage.
+## Repository role
 
-## Contact path
+This repository is the historical `pinfloyd/cnp-action` compatibility surface.
 
-Support, licensing, and production-use inquiries are handled asynchronously.
+For new public evaluation work, use:
+
+https://github.com/pinfloyd/ai-admissibility-action
+
+For the canonical public demonstration, use:
+
+https://ai-admissibility.com/canonical-pilot/
+
+## Contact
+
+For research, integration, collaboration, or deployment discussions:
+
+**governance@ai-admissibility.com**
 
 ## Current scope
 
-At this stage, the repository provides:
-- action metadata anchor;
-- baseline README surface;
-- basic usage example;
-- evaluation-only license boundary.
+This repository does not provide:
 
-## Not yet provided
-
-At this stage, the repository does not claim:
-- live production authority integration;
 - production support commitments;
-- public Marketplace availability.
+- hosted customer runtime;
+- public checkout;
+- payment processing;
+- automatic credential issuance;
+- customer-specific production no-bypass guarantees.
 
-## Inquiry type
-
-For any of the following, a separate written path is required:
-- production use;
-- commercial licensing;
-- hosted authority access;
-- private or dedicated authority discussions.
+Older repository history may describe earlier Hosted Authority or commercial concepts. Those are historical artifacts and do not define the current public product surface.
